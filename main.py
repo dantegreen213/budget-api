@@ -34,3 +34,11 @@ def delete_expense(expense_id: int):
         s.delete(expense)
         s.commit()
         return {"deleted": expense_id}
+
+@app.get("/summary")
+def summary():
+    with Session(engine) as s:
+        totals = {}
+        for e in s.exec(select(Expense)).all():
+            totals[e.category] = totals.get(e.category, 0) + e.amount
+        return totals
